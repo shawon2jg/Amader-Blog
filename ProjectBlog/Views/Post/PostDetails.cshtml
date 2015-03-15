@@ -1,0 +1,173 @@
+﻿@using System
+@using ProjectBlog.Models
+@model ProjectBlog.Models.Post
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <title>@Model.Title - AmaderBlog.com</title>
+</head>
+<body style="font-family: Consolas; background-color: lightcyan; text-align: justify" >
+    <nav class="navbar navbar-default navbar-fixed-top" >
+        <div class="container-fluid" style="background-color: #33CCFF; ">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <a class="navbar-brand" href="@Url.Action("Index", "Home")"><strong>AmaderBlog.com</strong></a>
+            </div>
+            <div>
+                <ul class="nav navbar-nav navbar-left">
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-facebook fa-2x"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-twitter fa-2x"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <form action="/Post/Search" method="get" class="navbar-form navbar-left" role="search">
+                            <input type="text" name="SearchString" id="txtContent" placeholder="Type your search">
+                            <button type="submit" class="btn btn-info">
+                                <span class="glyphicon glyphicon-search"></span>
+                            </button>
+                        </form>
+                    </li>
+                    <li><a href="@Url.Action("About", "Home")">About</a></li>
+                    @if (Session["UserID"] == null)
+                    {
+                        <li><a href="@Url.Action("SignIn", "Home")">Sign In</a></li>
+                    }
+                    @if (Session["UserID"] != null)
+                    {
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">@ViewBag.User.UserName<span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="@Url.Action("Create", "Post")">Write New Article</a></li>
+                                <li><a href="@Url.Action("MyPosts", "Post")">My Articles</a></li>
+                                <li class="divider"></li>
+                                <li><a href="@Url.Action("SignOut", "Home")">Sign Out</a></li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    <div class="form-horizontal" style="margin-top: 100px;">
+        <div class="page-header">
+            <div class="form-group">
+                <h1>
+                    <label class="control-label col-sm-offset-2 col-sm-6" style="text-align: left;">
+                        @Model.Title
+                    </label>
+                </h1>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-4">
+                    <small><span class="control-label text-muted">Posted On: @Model.PostedDate.ToLongDateString() @Model.PostedDate.ToLongTimeString()</span></small>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-4">
+                    <small><span class="control-label text-muted">Author: @ViewBag.AuthorName </span></small>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-6 form-horizontal col-sm-offset-2">
+
+                <p class="control-label" style="text-align: justify">@Html.Raw(Model.Content)</p>
+                <br /><br />
+                <div>
+                    @if (Session["UserID"] != null)
+                    {
+                        <textarea class="form-control" rows="2" name="textComment" id="textComment" placeholder="Write a comment"></textarea>
+                        <br />
+                    }
+                    <b>Comments</b>
+
+                    <table class="table" id="commentTable">
+                        @foreach (var comment in @Model.Comments)
+                        {
+                            <tr><td><div class="form-group"><h5 class="control-label col-sm-12" style="text-align: justify;">@comment.Content</h5><small class="control-label col-sm-12 text-muted" style="text-align: right">@comment.User.UserName</small><small class="control-label col-sm-12 text-muted" style="text-align: right">@comment.CommentDate.ToShortDateString() @comment.CommentDate.ToShortTimeString()</small></div></td></tr>
+                        }
+                    </table>
+                </div>
+            </div>
+
+
+            <div class="col-md-2 form-horizontal">
+                <h5><strong>More articles by this author:</strong></h5>
+                <table class="table">
+                    @foreach (Post post in ViewBag.MorePosts)
+                    {
+                        <tr>
+                            <td>
+                                @Html.ActionLink(@post.Title, "PostDetails", new { id = post.PostID })
+                                <p style="text-align: justify">
+                                    <small><span class="control-label">@Html.Raw(post.Content)...</span></small>
+                                </p>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="footer" class="nav navbar-default navbar-fixed-bottom" style="font-family: Lucida Sans; background-color: #33CCFF; ">
+        <div class="container">
+            <div class="row nav navbar-nav navbar-right">
+                &copy; 2015 Team Engine Box | All Right Reserved
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Scripts/jquery-2.1.3.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    @if (Session["UserID"] != null)
+    {
+        <script>
+            $(document).ready(function() {
+                $("#textComment").on("keypress", function(e) {
+                    if (e.keyCode == 13) {
+                        var text = $("#textComment").val();
+                        $("#commentTable").append('<tr><td><div class="form-group"><h5 class="control-label col-sm-12" style="text-align: left;">' + text + '</h5><small class="control-label col-sm-12 text-muted" style="text-align: right">@ViewBag.User.UserName</small><small class="text-muted col-sm-12" style="text-align: right">@DateTime.Now.ToShortDateString() @DateTime.Now.ToShortTimeString()</small></div></td></tr>');
+                        $("#textComment").val("");
+                        var jsonData = { Content: text, PostID: "@Model.PostID", UserID: "@ViewBag.User.UserID" };
+                        $.ajax({
+                            type: "POST",
+                            url: '@Url.Action("AddComment", "Post")',
+                            contentType: "application/json; charset=utf-8",
+                            data: JSON.stringify(jsonData),
+                            dataType: "json",
+                            success: function(data) {
+                                if (data == true) {
+                                }
+                            },
+                        });
+                        return false;
+                    }
+                });
+            });
+        </script>
+    }
+
+</body>
+</html>

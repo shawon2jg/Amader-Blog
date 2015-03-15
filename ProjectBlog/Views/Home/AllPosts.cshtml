@@ -1,0 +1,127 @@
+﻿@using ProjectBlog.Models
+@model IEnumerable<ProjectBlog.Models.Post>
+
+@{
+    Layout = null;
+
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <title>@ViewBag.NameOfAuthor's articles - AmaderBlog.com</title>
+</head>
+<body style="font-family: Consolas; background-color: lightcyan; text-align: justify">
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid" style="background-color: #33CCFF; ">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <a class="navbar-brand" href="@Url.Action("Index", "Home")"><strong>AmaderBlog.com</strong></a>
+            </div>
+            <div>
+                <ul class="nav navbar-nav navbar-left">
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-facebook fa-2x"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-twitter fa-2x"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <form action="/Post/Search" method="get" class="navbar-form navbar-left" role="search">
+                            <input type="text" name="SearchString" id="txtContent" placeholder="Type your search">
+                            <button type="submit" class="btn btn-info">
+                                <span class="glyphicon glyphicon-search"></span>
+                            </button>
+                        </form>
+                    </li>
+                    <li><a href="@Url.Action("About", "Home")">About</a></li>
+                    @if (Session["UserID"] == null)
+                    {
+                        <li><a href="@Url.Action("SignIn", "Home")">Sign In</a></li>
+                    }
+                    @if (Session["UserID"] != null)
+                    {
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">@ViewBag.User.UserName<span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="@Url.Action("Create", "Post")">Write New Article</a></li>
+                                <li><a href="@Url.Action("MyPosts", "Post")">My Articles</a></li>
+                                <li class="divider"></li>
+                                <li><a href="@Url.Action("SignOut", "Home")">Sign Out</a></li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    <div class="col-md-2 form-horizontal">
+        <h5><strong>Authors:</strong></h5>
+        <table class="table">
+            @foreach (User user in ViewBag.Authors)
+            {
+                <tr>
+                    <td>
+                        @*@Html.ActionLink(@user.UserName, "/Home/AllPosts", new { id = user.UserID })*@
+                        <a href="@Url.Action("AllPosts", "Home", new {id=@user.UserID})">@user.UserName</a>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+    <div class="form-horizontal" style="margin-top: 100px">
+        <div class="form-group">
+            <div class="col-sm-8">
+                <table class="table">
+                    <thead>
+                    <th><h3>All Articles of @ViewBag.NameOfAuthor</h3></th>
+
+                    </thead>
+                    <tbody>
+                        @if (Model == null)
+                        {
+                            <tr>
+                                <td>
+                                    <label>Sorry, nothing found!</label>
+                                </td>
+                            </tr>
+                        }
+                        @foreach (var item in @Model)
+                        {
+                            <tr>
+                                <td>
+                                    <h4> <a href="@Url.Action("PostDetails", "Post", new {id=@item.PostID})">@item.Title</a></h4>
+                                    <span>@ViewBag.AuthorName</span>
+                                    <p style="text-align: justify">@Html.Raw(item.Content)...</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="footer" class="nav navbar-default navbar-fixed-bottom" style="font-family: Lucida Sans; background-color: #33CCFF; ">
+        <div class="container">
+            <div class="row nav navbar-nav navbar-right">
+                &copy; 2015 Team Engine Box | All Right Reserved
+            </div>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-2.1.3.min.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+</body>
+</html>
